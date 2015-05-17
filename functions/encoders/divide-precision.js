@@ -6,7 +6,7 @@ function dividePrecision (params) {
 		precision: 16
 	});
 
-	var divider = Math.pow(config.precision, 2) - 1;
+	var divider = Math.pow(2, config.precision) - 1;
 
 	var cache = [];
 
@@ -26,6 +26,19 @@ function dividePrecision (params) {
 		}
 		return bitArray;
 
+	}
+
+	function decode (array) {
+		if (array.length !== config.precision + 1) {
+			throw new Error('Cannot decode array. Invalid length');
+		}
+		var sign = array[0];
+		var number = parseInt(array.join('').slice(1), 2);
+		if (sign == '0') {
+			return number / divider;
+		} else {
+			return -number /divider;
+		}
 	}
 
 	function getIntValue (number) {
@@ -56,7 +69,8 @@ function dividePrecision (params) {
 	}
 
 	return {
-		encode: encode
+		encode: encode,
+		decode: decode
 	}
 
 }
