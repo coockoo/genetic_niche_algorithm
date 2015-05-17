@@ -1,0 +1,16 @@
+{
+  "name": "course_work",
+  "version": "0.1.0",
+  "description": "Magister program. Course work. Genetic algorithms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "genetic",
+    "algorithms",
+    "coursework"
+  ],
+  "author": "alex.coockoo@gmail.com",
+  "license": "BSD-2-Clause"
+}
