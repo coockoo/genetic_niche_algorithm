@@ -1,4 +1,5 @@
 var _ = require('lodash');
+var gray = require('./gray-encoder');
 
 function dividePrecision (params) {
 	var safeParams = params || {};
@@ -24,7 +25,7 @@ function dividePrecision (params) {
 		} else {
 			bitArray.unshift(0);
 		}
-		return bitArray;
+		return gray.encode(bitArray);
 
 	}
 
@@ -32,8 +33,9 @@ function dividePrecision (params) {
 		if (array.length !== config.precision + 1) {
 			throw new Error('Cannot decode array. Invalid length');
 		}
-		var sign = array[0];
-		var number = parseInt(array.join('').slice(1), 2);
+		var decodedArray = gray.decode(array);
+		var sign = decodedArray[0];
+		var number = parseInt(decodedArray.join('').slice(1), 2);
 		if (sign == '0') {
 			return number / divider;
 		} else {
