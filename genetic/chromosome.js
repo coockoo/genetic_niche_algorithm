@@ -1,35 +1,63 @@
+var _ = require('lodash');
+
 module.exports = function chromosome (options) {
 
-	var variables = options.variables || []; // X
-	var deviations = options.diviations || []; // E
-	var angles = options.angles || []; // A (not used)
+	var size = options.size || 10; // todo: default chromosome size
 
-	var fitness = options.fitness || defaultFitness;
+	var variables = options && options.variables || getDefaultVariables({ size: size }); // X
+	var deviations = options && options.deviations || getDefaultDeviation({ size: size }); // E
 
-	var evolutionParameter = options.evolutionParameter || 25; // Recommended value
+	var angles = options && options.angles || []; // A (not used)
+
+	var evolutionParameter = options && options.evolutionParameter || 25; // Recommended value
 
 	var context = {
 		generateRandom: generateRandom,
+		setVariable: setVariable,
+		setDeviation: setDeviation,
 		getFitness: getFitness,
+		getSize: getSize,
+		getVariable: getVariable,
 		toJSON: toJSON
 	};
 
 	return context;
 
-	function getFitness () {
+	function setVariable (params) {
+		if ( params.index < 0 || params.index >= variables.length ) {
+			throw new Error('Index out of range ' + index);
+		}
+		variables[params.index] = params.variable;
+		return context;
+	}
+	function setDeviation (params) {
+		if ( params.index < 0 || params.index >= variables.length ) {
+			throw new Error('Index out of range ' + index);
+		}
+		deviations[params.index] = params.deviation;
+		return context;
+	}
+
+	function getFitness (fitness) {
 		return fitness(variables);
 	}
 
-	function generateRandom (params) {
-		for (var i = 0; i < params.size; ++i) {
+	function getSize () {
+		return size;
+	}
 
+	function getVariable (index) {
+		if ( index < 0 || index >= variables.length ) {
+			throw new Error('Index out of range ' + index);
+		}
+		return variables[index];
+	}
+
+	function generateRandom () {
+		for (var i = 0; i < size; ++i) {
 			//TODO: add min/max value instead of random to this shit
-			var randomVariable = Math.random() * 2 - 1;
-			variables.push(randomVariable);
-
-			var randomDeviation = Math.random() * evolutionParameter;
-			deviations.push(randomDeviation);
-
+			setVariable({ index: i, variable: Math.random() * 2 - 1});
+			setDeviation({ index: i, deviation: getDeviation({ evolutionParameter: evolutionParameter}) });
 		}
 		return context;
 
@@ -44,6 +72,13 @@ module.exports = function chromosome (options) {
 	}
 };
 
-function defaultFitness () {
-	return 0;
+function getDeviation (params) {
+	return Math.random() * params.evolutionParameter;
+}
+
+function getDefaultVariables (params) {
+	return _(params.size).range().map(function () { return 0; }).valueOf();
+}
+function getDefaultDeviation (params) {
+	return _(params.size).range().map(function () { return 0; }).valueOf();
 }

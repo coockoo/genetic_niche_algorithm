@@ -21,8 +21,8 @@ module.exports = function population (options) {
 
 	function generateInitialPopulation (params) {
 		for (var i = 0; i < params.size; ++i) {
-			var chromo = chromosome({ fitness: options.fitness });
-			chromo.generateRandom({ size: config.paramsSize });
+			var chromo = chromosome({ fitness: options.fitness, size: config.paramsSize });
+			chromo.generateRandom();
 			population.push(chromo);
 		}
 		return context;
