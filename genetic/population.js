@@ -12,6 +12,8 @@ module.exports = function population (options) {
 
 	var context = {
 		generateInitialPopulation: generateInitialPopulation,
+		getChromosome: getChromosome,
+		getSize: getSize,
 		toJSON: toJSON
 	};
 
@@ -23,8 +25,18 @@ module.exports = function population (options) {
 			chromo.generateRandom({ size: config.paramsSize });
 			population.push(chromo);
 		}
-		console.log('pop', population);
 		return context;
+	}
+
+	function getChromosome (index) {
+		if (index < 0 || index >= population.length) {
+			throw new Error('Cannot get chromosome from population. Index out of range.');
+		}
+		return population[index];
+	}
+
+	function getSize () {
+		return population.length;
 	}
 
 	function toJSON () {
