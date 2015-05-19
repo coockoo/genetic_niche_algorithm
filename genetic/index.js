@@ -1,16 +1,13 @@
-var precision = 16;
-var encoder = require('../functions/encoders/divide-precision')({ precision: precision });
+var population = require('./population');
+var fitness = require('../functions/equal-maxima');
+
 module.exports = function genetic () {
-	var population = generateInitialPopulation({ count: 10 });
+	var currentPopulation = population({
+		paramsSize: 10,
+		fitness: fitness
+	});
+	currentPopulation.generateInitialPopulation({ size: 10 });
+	console.log('current population %j', currentPopulation);
 };
 
-//module.exports();
-
-function generateInitialPopulation (params) {
-	var population = [];
-	for (var i = 0; i < params.count; ++i) {
-		var random = Math.random() * 2 - 1;
-		population.push(encoder.encode(random));
-	}
-	return population;
-}
+module.exports();
