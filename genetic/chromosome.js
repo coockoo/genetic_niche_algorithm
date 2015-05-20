@@ -15,7 +15,6 @@ module.exports = function chromosome (options) {
 		generateRandom: generateRandom,
 		setVariable: setVariable,
 		setDeviation: setDeviation,
-		getFitness: getFitness,
 		getSize: getSize,
 		getVariable: getVariable,
 		toJSON: toJSON
@@ -36,10 +35,6 @@ module.exports = function chromosome (options) {
 		}
 		deviations[params.index] = params.deviation;
 		return context;
-	}
-
-	function getFitness (fitness) {
-		return fitness(variables);
 	}
 
 	function getSize () {

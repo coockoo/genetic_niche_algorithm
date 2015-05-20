@@ -13,15 +13,20 @@ module.exports = function population (options) {
 	var context = {
 		generateInitialPopulation: generateInitialPopulation,
 		getChromosome: getChromosome,
+		addChromosome: addChromosome,
 		getSize: getSize,
 		toJSON: toJSON
 	};
 
 	return context;
 
+	function addChromosome (chromosome) {
+		population.push(chromosome);
+	}
+
 	function generateInitialPopulation (params) {
 		for (var i = 0; i < params.size; ++i) {
-			var chromo = chromosome({ fitness: options.fitness, size: config.paramsSize });
+			var chromo = chromosome({ size: config.paramsSize });
 			chromo.generateRandom();
 			population.push(chromo);
 		}

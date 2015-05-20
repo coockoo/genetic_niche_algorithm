@@ -4,13 +4,22 @@ var crossover = require('./crossover/discrete-recombination');
 
 module.exports = function genetic () {
 
-	var currentPopulation = population({
-		paramsSize: 10,
-		fitness: fitness
-	});
-	currentPopulation.generateInitialPopulation({ size: 10 });
+	var populationSize = 10;
+	var childrenPoolSize = 20;
 
-	crossover({ population: currentPopulation, parentsCount: 4 });
+	var currentPopulation = population({
+		paramsSize: 10
+	});
+	currentPopulation.generateInitialPopulation({ size: populationSize });
+
+	var childPopulation = population({
+		paramsSize: 10
+	});
+	for (var i = 0; i < childrenPoolSize; ++i) {
+		var child = crossover({ population: currentPopulation, parentsCount: 4 });
+		childPopulation.addChromosome(child);
+	}
+	console.log(childPopulation.toJSON());
 };
 
 module.exports();
