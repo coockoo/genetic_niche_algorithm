@@ -47,7 +47,6 @@ function createChild (params) {
 		var variable = params.parents[randomParentIndex].getVariable(i);
 
 		childChromosome.setVariable({ index: i, variable: variable });
-		childChromosome.setDeviation({ index: i });
 
 	}
 

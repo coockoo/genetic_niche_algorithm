@@ -13,6 +13,7 @@ module.exports = function population (options) {
 	var context = {
 		generateInitialPopulation: generateInitialPopulation,
 		getChromosome: getChromosome,
+		getParamsSize: getParamsSize,
 		addChromosome: addChromosome,
 		getSize: getSize,
 		toJSON: toJSON
@@ -20,6 +21,9 @@ module.exports = function population (options) {
 
 	return context;
 
+	function getParamsSize () {
+		return config.paramsSize;
+	}
 	function addChromosome (chromosome) {
 		population.push(chromosome);
 	}
@@ -46,8 +50,7 @@ module.exports = function population (options) {
 
 	function toJSON () {
 		return {
-			paramsSize: config.paramsSize,
-			populationSize: population.length,
+			size: population.length,
 			population: population
 		}
 	}

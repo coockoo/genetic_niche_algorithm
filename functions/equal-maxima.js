@@ -14,6 +14,4 @@ function equalMaximaNumber (x) {
 	return Math.pow(Math.sin(5 * Math.PI * x), 6);
 }
 
-console.log(equalMaxima([0.1, 0.3, 0.5]));
-
 module.exports = equalMaxima;
