@@ -1,6 +1,5 @@
 var population = require('./population');
 var fitness = require('../functions/equal-maxima');
-var crossover = require('./crossover/discrete-recombination');
 var mutation = require('./mutation/basic');
 var normalDistribution = require('./random/box-muller');
 
@@ -9,15 +8,17 @@ module.exports = function genetic () {
 	var populationSize = 10;
 	var paramsSize = 10;
 
+	//TODO: add sigma calculation (between chromo distance / chromos count)
 	var sigma = 10;
 	var tao = 1 / Math.sqrt(paramsSize);
+	var taoMutation = Math.exp(tao * normalDistribution());
 
 	var currentPopulation = population({
 		paramsSize: paramsSize
 	});
 	currentPopulation.generateInitialPopulation({ size: populationSize });
 
-	sigma = sigma * Math.exp(tao * normalDistribution());
+	sigma = sigma * taoMutation;
 	console.log('%j', currentPopulation);
 	currentPopulation = reproduction({
 		population: currentPopulation,
@@ -29,8 +30,7 @@ module.exports = function genetic () {
 
 function reproduction (params) {
 
-	// todo: replace this tao below with real one.
-	var newPopulation = population({ paramsSize: params.population.getParamsSize(), tao: params.tao });
+	var newPopulation = population({ paramsSize: params.population.getParamsSize() });
 	for (var i = 0; i < params.population.getSize(); ++i) {
 		var parentChromosome = params.population.getChromosome(i);
 		var childChromosome = mutation({ chromosome: parentChromosome, sigma: params.sigma });
