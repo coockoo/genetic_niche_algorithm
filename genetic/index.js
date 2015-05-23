@@ -2,6 +2,7 @@ var population = require('./population');
 var fitness = require('../functions/equal-maxima');
 var mutation = require('./mutation/basic');
 var averageDistance = require('./distance/average-hamming');
+var averageFitness = require('./fitness/average');
 
 module.exports = function genetic () {
 
@@ -19,7 +20,7 @@ module.exports = function genetic () {
 	var sigma = averageDistance({ population: currentPopulation, min: -1, max: 1});
 	var counter = 0;
 	var prevAverageFitness = 0;
-	var currentAverageFitness = averageFitness({ population: currentPopulation });
+	var currentAverageFitness = averageFitness({ fitness: fitness, population: currentPopulation });
 	while ( (currentAverageFitness - prevAverageFitness) > 0.001 && counter <= 10000 ) {
 		++counter;
 		//sigma = sigma * taoMutation;
@@ -55,13 +56,5 @@ function reproduction (params) {
 
 }
 
-function averageFitness (params) {
-	var sum = 0;
-	for (var i = 0; i < params.population.getSize(); ++i) {
-		sum += fitness(params.population.getChromosome(i).getVariables());
-	}
-	return sum / params.population.getSize();
-}
 
-
-module.exports();
+//module.exports();
