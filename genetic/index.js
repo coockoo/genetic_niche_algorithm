@@ -36,15 +36,10 @@ module.exports = function genetic (options) {
 		var currentAverageFitness = averageFitness({ population: options.population, fitness: options.fitness });
 		var stopCounter = 0;
 		while (
+			// TODO: maybe remove hardcode ?
 			stopCounter < 5 &&
 			results.generations <= options.maxGenerations
 			) {
-
-			if ((currentAverageFitness - prevAverageFitness) > options.stopFitnessThreshold) {
-				stopCounter = 0;
-			} else {
-				++stopCounter;
-			}
 
 			++results.generations;
 			currentPopulation = options.reproduction({
@@ -55,6 +50,12 @@ module.exports = function genetic (options) {
 			});
 			prevAverageFitness = currentAverageFitness;
 			currentAverageFitness = averageFitness({ population: currentPopulation, fitness: options.fitness });
+
+			if ((currentAverageFitness - prevAverageFitness) > options.stopFitnessThreshold) {
+				stopCounter = 0;
+			} else {
+				++stopCounter;
+			}
 		}
 
 		results.finalAverageFitness = currentAverageFitness;
