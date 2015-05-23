@@ -58,8 +58,8 @@ module.exports = function genetic (options) {
 			}
 		}
 
-		results.finalAverageFitness = currentAverageFitness;
-		results.finalFitnessDifference = currentAverageFitness - prevAverageFitness;
+		results.finalAverageFitness = currentAverageFitness.toFixed(5);
+		results.finalFitnessDifference = (currentAverageFitness - prevAverageFitness).toFixed(5);
 		results.bestChromosome = currentPopulation.getBestChromosome({ fitness: options.fitness });
 
 		console.log('%j', results);
