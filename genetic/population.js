@@ -11,7 +11,7 @@ module.exports = function population (options) {
 	var population = [];
 
 	var context = {
-		generateInitialPopulation: generateInitialPopulation,
+		generateRandom: generateRandom,
 		getChromosome: getChromosome,
 		getParamsSize: getParamsSize,
 		addChromosome: addChromosome,
@@ -28,11 +28,11 @@ module.exports = function population (options) {
 		population.push(chromosome);
 	}
 
-	function generateInitialPopulation (params) {
+	function generateRandom (params) {
 		for (var i = 0; i < params.size; ++i) {
-			var chromo = chromosome({ size: config.paramsSize });
-			chromo.generateRandom();
-			population.push(chromo);
+			var randomChromosome = chromosome({ size: config.paramsSize });
+			randomChromosome.generateRandom({ min: params.min, max: params.max });
+			population.push(randomChromosome);
 		}
 		return context;
 	}
