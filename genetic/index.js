@@ -1,31 +1,39 @@
 var population = require('./population');
 var fitness = require('../functions/equal-maxima');
 var mutation = require('./mutation/basic');
-var normalDistribution = require('./random/box-muller');
+var averageDistance = require('./distance/average-hamming');
 
 module.exports = function genetic () {
 
 	var populationSize = 10;
-	var paramsSize = 10;
+	var paramsSize = 2;
 
-	//TODO: add sigma calculation (between chromo distance / chromos count)
-	var sigma = 10;
 	var tao = 1 / Math.sqrt(paramsSize);
-	var taoMutation = Math.exp(tao * normalDistribution());
+	//var taoMutation = Math.exp(tao * normalDistribution());
+	var taoMutation = 1 / 2;
 
 	var currentPopulation = population({
 		paramsSize: paramsSize
 	});
-	currentPopulation.generateInitialPopulation({ size: populationSize });
-
-	sigma = sigma * taoMutation;
-	console.log('%j', currentPopulation);
-	currentPopulation = reproduction({
-		population: currentPopulation,
-		sigma: sigma
-	});
-	console.log('%j', currentPopulation);
-
+	var initialPopulation = currentPopulation.generateInitialPopulation({ size: populationSize });
+	var sigma = averageDistance({ population: currentPopulation, min: -1, max: 1});
+	var counter = 0;
+	var prevAverageFitness = 0;
+	var currentAverageFitness = averageFitness({ population: currentPopulation });
+	while ( (currentAverageFitness - prevAverageFitness) > 0.001 && counter <= 10000 ) {
+		++counter;
+		//sigma = sigma * taoMutation;
+		currentPopulation = reproduction({
+			population: currentPopulation,
+			sigma: sigma
+		});
+		prevAverageFitness = currentAverageFitness;
+		currentAverageFitness = averageFitness({ population: currentPopulation });
+	}
+	for (var i = 0; i < populationSize; ++i) {
+		console.log(fitness(currentPopulation.getChromosome(i).getVariables()), fitness(initialPopulation.getChromosome(i).getVariables()));
+	}
+	console.log(counter);
 };
 
 function reproduction (params) {
@@ -45,6 +53,14 @@ function reproduction (params) {
 	}
 	return newPopulation;
 
+}
+
+function averageFitness (params) {
+	var sum = 0;
+	for (var i = 0; i < params.population.getSize(); ++i) {
+		sum += fitness(params.population.getChromosome(i).getVariables());
+	}
+	return sum / params.population.getSize();
 }
 
 
