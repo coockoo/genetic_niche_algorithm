@@ -1,9 +1,9 @@
 var genetic = require('./genetic');
 
-var fitness = require('./functions/equal-maxima');
 var population = require('./genetic/population');
 var averageDistance = require('./genetic/distance/average-hamming');
-var averageFitness = require('./genetic/fitness/average');
+
+var fitness = require('./functions/equal-maxima');
 var mutation = require('./genetic/mutation/basic');
 var reproduction = require('./genetic/reproduction/mutation-better');
 
@@ -26,39 +26,42 @@ var reproduction = require('./genetic/reproduction/mutation-better');
 	// Average distance between the input population
 	var currentAverageDistance = averageDistance({ population: inputPopulation, min: input.min, max: input.max });
 
-	runGenetic({
+	var geneticOne = genetic({
 		population: inputPopulation,
-		sigma: currentAverageDistance / 32,
-		maxGenerations: input.maxGenerations,
-		stopFitnessThreshold: input.stopFitnessThreshold
+		sigma: currentAverageDistance / 2,
+		reproduction: reproduction,
+		fitness: fitness,
+		mutation: mutation,
+		stopFitnessThreshold: input.stopFitnessThreshold,
+		maxGenerations: input.maxGenerations
 	});
+
+	geneticOne.run();
+
+	var geneticTwo = genetic({
+		population: inputPopulation,
+		sigma: currentAverageDistance / 4,
+		reproduction: reproduction,
+		fitness: fitness,
+		mutation: mutation,
+		stopFitnessThreshold: input.stopFitnessThreshold,
+		maxGenerations: input.maxGenerations
+	});
+
+	geneticTwo.run();
+
+	var geneticThree = genetic({
+		population: inputPopulation,
+		sigma: currentAverageDistance / 8,
+		reproduction: reproduction,
+		fitness: fitness,
+		mutation: mutation,
+		stopFitnessThreshold: input.stopFitnessThreshold,
+		maxGenerations: input.maxGenerations
+	});
+
+	geneticThree.run();
 
 
 })();
 
-function runGenetic (params) {
-
-	var currentPopulation = params.population;
-	var counter = 0;
-	var prevAverageFitness = 0;
-	var currentAverageFitness = averageFitness({ population: params.population, fitness: fitness });
-	while ( (currentAverageFitness - prevAverageFitness) > params.stopFitnessThreshold && counter <= params.maxGenerations ) {
-		++counter;
-		currentPopulation = reproduction({
-			population: currentPopulation,
-			sigma: params.sigma,
-			mutation: mutation,
-			fitness: fitness
-		});
-		prevAverageFitness = currentAverageFitness;
-		currentAverageFitness = averageFitness({ population: currentPopulation, fitness: fitness });
-	}
-
-	console.log('finished at cycle %d', counter);
-	console.log('finished with average fitness %d', currentAverageFitness);
-	console.log('finished with prev average fitness %d', prevAverageFitness);
-	console.log('difference is %d', currentAverageFitness - prevAverageFitness);
-
-	return currentPopulation;
-
-}

@@ -13,6 +13,7 @@ module.exports = function population (options) {
 	var context = {
 		generateRandom: generateRandom,
 		getChromosome: getChromosome,
+		getBestChromosome: getBestChromosome,
 		getParamsSize: getParamsSize,
 		addChromosome: addChromosome,
 		getSize: getSize,
@@ -46,6 +47,24 @@ module.exports = function population (options) {
 
 	function getSize () {
 		return population.length;
+	}
+
+	function getBestChromosome (params) {
+		// TODO: maybe store fitness inside of the chromosome
+		var bestChromosomeIndex = 0;
+		var bestChromosomeFitness = params.fitness(getChromosome(bestChromosomeIndex).getVariables());
+		for (var i = 0; i < getSize(); ++i) {
+			var currentFitness = params.fitness(getChromosome(i).getVariables());
+			if (currentFitness > bestChromosomeFitness) {
+				bestChromosomeIndex = i;
+				bestChromosomeFitness = currentFitness;
+			}
+		}
+		return {
+			index: bestChromosomeIndex,
+			chromosome: getChromosome(bestChromosomeIndex),
+			fitness: bestChromosomeFitness
+		};
 	}
 
 	function toJSON () {
