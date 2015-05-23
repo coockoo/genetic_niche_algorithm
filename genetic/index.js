@@ -34,10 +34,17 @@ module.exports = function genetic (options) {
 		results.generations = 0;
 		var prevAverageFitness = 0;
 		var currentAverageFitness = averageFitness({ population: options.population, fitness: options.fitness });
+		var stopCounter = 0;
 		while (
-			(currentAverageFitness - prevAverageFitness) > options.stopFitnessThreshold &&
+			stopCounter < 5 &&
 			results.generations <= options.maxGenerations
 			) {
+
+			if ((currentAverageFitness - prevAverageFitness) > options.stopFitnessThreshold) {
+				stopCounter = 0;
+			} else {
+				++stopCounter;
+			}
 
 			++results.generations;
 			currentPopulation = options.reproduction({
