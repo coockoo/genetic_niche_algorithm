@@ -1,4 +1,5 @@
 var chromosome = require('./chromosome');
+var averageFitness = require('./fitness/average');
 
 module.exports = function population (options) {
 
@@ -16,7 +17,12 @@ module.exports = function population (options) {
 
 		getBestChromosome: getBestChromosome,
 
+		getFitnessFunction: getFitnessFunction,
+
+		getAverageFitness: getAverageFitness,
+
 		getSize: getSize,
+
 		toJSON: toJSON
 	};
 
@@ -56,6 +62,12 @@ module.exports = function population (options) {
 		}
 		return getChromosome(bestChromosomeIndex);
 	}
+	function getFitnessFunction () {
+		return fitness;
+	}
+	function getAverageFitness () {
+		return averageFitness({ population: context });
+	}
 	function getSize () {
 		return population.length;
 	}
@@ -66,3 +78,6 @@ module.exports = function population (options) {
 		};
 	}
 };
+
+//var a = module.exports({ fitness: function (i) {return i.length;}});
+//a.generateRandom({ paramsSize: 10, size: 10, min: 0, max: 1});
