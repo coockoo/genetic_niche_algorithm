@@ -70,7 +70,7 @@ module.exports = function chromosome (options) {
 	function generateRandom (params) {
 		_(size).range().forEach(function (i) {
 			setVariable({ index: i, variable: casual.double(params.min, params.max)});
-		});
+		}).valueOf();
 		return context;
 	}
 	function toJSON () {
