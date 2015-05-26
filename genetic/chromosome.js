@@ -7,16 +7,23 @@ module.exports = function chromosome (options) {
 		throw new Error('Cannot create chromosome without size');
 	}
 	var size = options.size;
-	var min = options.min;
-	var max = options.max;
-	var variables = getDefaultVariables({ size: size }); // X
+	var variables = options.variables || getDefaultVariables({ size: size }); // X
+	var fitnessValue = null;
+	var fitnessFunction = options.fitness;
 
 	var context = {
-		generateRandom: generateRandom,
-		setVariable: setVariable,
 		getVariables: getVariables,
-		getSize: getSize,
+		setVariables: setVariables,
+
 		getVariable: getVariable,
+		setVariable: setVariable,
+
+		getFitness: getFitness,
+
+		getSize: getSize,
+
+		generateRandom: generateRandom,
+
 		toJSON: toJSON
 	};
 
@@ -25,15 +32,14 @@ module.exports = function chromosome (options) {
 	function getVariables () {
 		return variables;
 	}
-	function setVariable (params) {
-		if ( params.index < 0 || params.index >= variables.length ) {
-			throw new Error('Index out of range ' + params.index);
+	function setVariables (newVariables) {
+		if (newVariables.length !== variables.length) {
+			throw new Error('Size mismatch. Expected ' + variables.length + ' got ' + newVariables.length);
 		}
-		variables[params.index] = params.variable;
+		_.forEach(newVariables, function (v, i) {
+			setVariable({ index: i, variable: v });
+		});
 		return context;
-	}
-	function getSize () {
-		return size;
 	}
 	function getVariable (index) {
 		if ( index < 0 || index >= variables.length ) {
@@ -41,10 +47,30 @@ module.exports = function chromosome (options) {
 		}
 		return variables[index];
 	}
-	function generateRandom (params) {
-		for (var i = 0; i < size; ++i) {
-			setVariable({ index: i, variable: casual.double(params.min, params.max)});
+	function setVariable (params) {
+		if ( params.index < 0 || params.index >= variables.length ) {
+			throw new Error('Index out of range ' + params.index);
 		}
+		variables[params.index] = params.variable;
+		fitnessValue = null;
+		return context;
+	}
+	function getFitness () {
+		if (!fitnessFunction) {
+			throw new Error('Cannot calculate fitness without fitness function');
+		}
+		if (_.isNull(fitnessValue))  {
+			fitnessValue = fitnessFunction(variables);
+		}
+		return fitnessValue;
+	}
+	function getSize () {
+		return size;
+	}
+	function generateRandom (params) {
+		_(size).range().forEach(function (i) {
+			setVariable({ index: i, variable: casual.double(params.min, params.max)});
+		});
 		return context;
 	}
 	function toJSON () {
