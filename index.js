@@ -1,73 +1,60 @@
+var _ = require('lodash');
+
 var genetic = require('./genetic');
 
 var population = require('./genetic/population');
 var averageDistance = require('./genetic/distance/average-hamming');
 
-var fitness = require('./functions/equal-maxima');
+var fitness = require('./functions/decreasing-maxima');
 var mutation = require('./genetic/mutation/basic');
 var reproduction = require('./genetic/reproduction/mutation-better');
+
+var combinations = require('./genetic/helpers/combinations');
 
 (function () {
 
 	var input = {
-		paramsSize: 2, // Size of the input parameters for fitness function
+		paramsSize: 1, // Size of the input parameters for fitness function
 		populationSize: 100, // Input population size.
-		min: -1, // Minimum value of each X in variables
+		min: 0, // Minimum value of each X in variables
 		max: 1, // Maximum value of each X in variables
-		maxGenerations: 200,
+		maxGenerations: 500,
 		stopFitnessThreshold: 0.001,
+		peakThreshold: 0.005,
 
-		repetitions: 10
+		testsRepetitions: 10,
+		peaks: combinations([0.1, 0.3, 0.5, 0.7, 0.9], 1)
+	};
+	input.getSigma = function getSigma (params) {
+		return averageDistance({ population: params.population, min: input.min, max: input.max }) / 2;
 	};
 
-	var inputPopulation = population({
-		paramsSize: input.paramsSize
-	});
-	inputPopulation.generateRandom({ size: input.populationSize, min: input.min, max: input.max });
+	_(input.testsRepetitions).range().forEach(runAlgorithm).valueOf();
 
-	// Average distance between the input population
-	var inputAverageDistance = averageDistance({ population: inputPopulation, min: input.min, max: input.max });
+	function runAlgorithm () {
 
-	runSigmaFromInitial();
+		var currentPopulation = population({
+			fitness: fitness
+		});
+		currentPopulation.generateRandom({
+			size: input.populationSize,
+			paramsSize: input.paramsSize,
+			min: input.min,
+			max: input.max
+		});
 
-	console.log('=======');
+		var geneticRunner = genetic({
+			population: currentPopulation,
+			sigma: input.getSigma({ population: currentPopulation }),
+			reproduction: reproduction,
+			mutation: mutation,
+			stopFitnessThreshold: input.stopFitnessThreshold,
+			maxGenerations: input.maxGenerations
 
-	runSigmaFromPrevious();
+		});
 
-	function runSigmaFromInitial () {
-		for (var i = 0; i < input.repetitions; ++i) {
-			var geneticRunner = genetic({
-				population: inputPopulation,
-				sigma: inputAverageDistance / Math.pow(2, i + 1),
-				reproduction: reproduction,
-				fitness: fitness,
-				mutation: mutation,
-				stopFitnessThreshold: input.stopFitnessThreshold,
-				maxGenerations: input.maxGenerations
-			});
-
-			geneticRunner.run();
-
-		}
-	}
-
-	function runSigmaFromPrevious () {
-		var currentAverageDistance = inputAverageDistance;
-		for (var i = 0; i < input.repetitions; ++i) {
-			var geneticRunner = genetic({
-				population: inputPopulation,
-				sigma: currentAverageDistance / Math.pow(2, i + 1),
-				reproduction: reproduction,
-				fitness: fitness,
-				mutation: mutation,
-				stopFitnessThreshold: input.stopFitnessThreshold,
-				maxGenerations: input.maxGenerations
-			});
-
-			var currentPopulation = geneticRunner.run();
-			currentAverageDistance = averageDistance({ population: currentPopulation, min: input.min, max: input.max });
-
-		}
+		var results = geneticRunner.run();
+		console.log('%j', results);
 
 	}
 
