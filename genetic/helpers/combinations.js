@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 function combinations (values, n) {
 	if (n === 0) {
 		return [ [] ];
