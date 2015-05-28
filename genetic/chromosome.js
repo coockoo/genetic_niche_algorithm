@@ -22,6 +22,9 @@ module.exports = function chromosome (options) {
 
 		getSize: getSize,
 
+		getFitnessFunction: getFitnessFunction,
+		setFitnessFunction: setFitnessFunction,
+
 		generateRandom: generateRandom,
 
 		toJSON: toJSON
@@ -66,6 +69,14 @@ module.exports = function chromosome (options) {
 	}
 	function getSize () {
 		return size;
+	}
+	function getFitnessFunction () {
+		return fitnessFunction;
+	}
+	function setFitnessFunction (newFitnessFunction) {
+		fitnessValue = null;
+		fitnessFunction = newFitnessFunction;
+		return context;
 	}
 	function generateRandom (params) {
 		_(size).range().forEach(function (i) {
