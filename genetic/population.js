@@ -1,3 +1,5 @@
+var _ = require('lodash');
+
 var chromosome = require('./chromosome');
 var averageFitness = require('./fitness/average');
 
@@ -16,6 +18,7 @@ module.exports = function population (options) {
 		addChromosome: addChromosome,
 
 		getBestChromosome: getBestChromosome,
+		getClosestChromosome: getClosestChromosome,
 
 		getFitnessFunction: getFitnessFunction,
 
@@ -61,6 +64,19 @@ module.exports = function population (options) {
 			}
 		}
 		return getChromosome(bestChromosomeIndex);
+	}
+	function getClosestChromosome (params) {
+		var closestDistance = 99999999; // Inf
+		var closestChromosome = null;
+		_.forEach(population, function (chromo) {
+			var distance = params.distance({ chromosomes: [chromo, params.chromosome], min: params.min, max: params.max });
+			if (distance < closestDistance) {
+				closestChromosome = chromo;
+				closestDistance = distance;
+			}
+		});
+		return closestChromosome;
+
 	}
 	function getFitnessFunction () {
 		return fitness;
